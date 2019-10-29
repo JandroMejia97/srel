@@ -20,7 +20,6 @@ class CanchaSerializer(ModelSerializer):
 
 
 class ReservaSerializer(ModelSerializer):
-    cancha = CanchaSerializer()
 
     class Meta:
         model = Reserva
