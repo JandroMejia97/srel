@@ -11,6 +11,9 @@ class TipoCancha(models.Model):
         verbose_name='Tipo de cancha',
     )
 
+    def __str__(self):
+        return self.tipo_cancha
+
     class Meta:
         verbose_name = 'Tipo de Cancha'
         verbose_name_plural = 'Tipos de Cancha'
