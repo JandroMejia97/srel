@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}
+Canchas
+{% endblock title %}
+{% block content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Vestuario</th>
+            <th scope="col">Iluminación</th>
+            <th scope="col">Césped Sintético</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if canchas %}
+        {% for cancha in canchas %}
+        <tr>
+            <th scope="row">
+                {{ cancha.id }}
+            </th>
+            <td>
+                <a href="/canchas/{{ cancha.id }}/">
+                    {{ cancha.nombre }}
+                </a>
+            </td>
+            <td>
+                {{ cancha.tipo }}
+            </td>
+            <td>
+                {{ cancha.get_vestuario }}
+            </td>
+            <td>
+                {{ cancha.get_iluminacion }}
+            </td>
+            <td>
+                {{ cancha.get_cesped }}
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+            <tr>
+                <p>
+                    Parece que no tienes canchas registras.
+                    <a href="/admin/reservas/cancha/add/">
+                        Agregar cancha
+                    </a>
+                </p>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+{% endblock content %}
