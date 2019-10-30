@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User
 
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.authentication import TokenAuthentication
 
 from .serializers import *
@@ -27,3 +28,15 @@ class ReservaViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(empleado=self.request.user)
 
+class OnlyPOST(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'POST':
+            return True
+        else:
+            return False
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
