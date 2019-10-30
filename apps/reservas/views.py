@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 
 from .serializers import *
 from .models import *
@@ -9,19 +10,19 @@ from .models import *
 class TipoCanchaViewSet(viewsets.ModelViewSet):
     queryset = TipoCancha.objects.all()
     serializer_class = TipoCanchaSerializer
-    permission_classes = (permissions.IsAuthenticated, )
+    authentication_classes = (TokenAuthentication,)
 
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Cancha.objects.all()
     serializer_class = CanchaSerializer
-    permission_classes = (permissions.IsAuthenticated, )
+    authentication_classes = (TokenAuthentication,)
 
 
 class ReservaViewSet(viewsets.ModelViewSet):
     queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
-    permission_classes = (permissions.IsAuthenticated, )
+    authentication_classes = (TokenAuthentication,)
 
     def perform_create(self, serializer):
         serializer.save(empleado=self.request.user)
