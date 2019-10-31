@@ -1,11 +1,19 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, decorators, pagination
 from rest_framework.authentication import TokenAuthentication
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import *
 from .models import *
+
+
+class ShortResultsSetPagination(pagination.PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 class TipoCanchaViewSet(viewsets.ModelViewSet):
@@ -24,6 +32,9 @@ class ReservaViewSet(viewsets.ModelViewSet):
     queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
     authentication_classes = (TokenAuthentication,)
+    pagination_class = ShortResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['cancha', 'id', 'cliente', 'empleado']
 
     def perform_create(self, serializer):
         serializer.save(empleado=self.request.user)

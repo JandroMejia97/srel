@@ -15,6 +15,7 @@ class TipoCanchaSerializer(ModelSerializer):
 
 
 class CanchaSerializer(ModelSerializer):
+    tipo = TipoCanchaSerializer()
 
     class Meta:
         model = Cancha
@@ -30,7 +31,8 @@ class ReservaSerializer(ModelSerializer):
             'cliente',
             'fecha_reserva',
             'cancha',
-            'fecha_turno'
+            'fecha_turno',
+            'empleado'
         ]
 
 
