@@ -92,11 +92,17 @@ class Reserva(models.Model):
         blank=False,
         null=False
     )
-    fecha_turno = models.DateTimeField(
+    fecha_turno = models.DateField(
         blank=False,
         null=False,
-        help_text='Seleccione la fecha y la hora en la que se usará la cancha',
+        help_text='Seleccione la fecha en la que se usará la cancha',
         verbose_name='Fecha del turno'
+    )
+    hora_turno = models.TimeField(
+        blank=False,
+        null=False,
+        help_text='Ingrese la hora en la que se usará la cancha. (No se pueden transponer).',
+        verbose_name='Hora del turno'
     )
     fecha_reserva = models.DateField(
         verbose_name='Fecha de la reserva',
@@ -110,12 +116,15 @@ class Reserva(models.Model):
     )
 
     def get_fecha_turno(self):
-        return self.fecha_turno.strftime('%d/%m/%Y %H:%M:%S')
+        return self.fecha_turno.strftime('%d/%m/%Y')
+    
+    def get_hora_turno(self):
+        return self.hora_turno.strftime('%H:%M:%S')
 
     def __str__(self):
-        return self.get_fecha_turno()
+        return '%s %s' %(self.get_fecha_turno(), self.get_hora_turno())
 
     class Meta:
         verbose_name = 'Reserva'
         verbose_name_plural = 'Reservas'
-        ordering = ['-fecha_reserva']
+        ordering = ['-fecha_reserva', 'hora_turno']

@@ -33,6 +33,7 @@ class ReservaSerializer(ModelSerializer):
             'fecha_reserva',
             'cancha',
             'fecha_turno',
+            'hora_turno',
             'empleado'
         ]
 
