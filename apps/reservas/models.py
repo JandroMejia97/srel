@@ -73,7 +73,7 @@ class Cancha(models.Model):
     class Meta:
         verbose_name = 'Cancha'
         verbose_name_plural = 'Canchas'
-        ordering = ['nombre']
+        ordering = ['id']
 
 
 class Reserva(models.Model):
@@ -110,7 +110,12 @@ class Reserva(models.Model):
     )
 
     def get_fecha_turno(self):
-        return self.fecha_turno.strftime("%b %d %Y %H:%M:%S")
+        return self.fecha_turno.strftime('%d/%m/%Y %H:%M:%S')
 
     def __str__(self):
-        return self.fecha_turno
+        return self.get_fecha_turno()
+
+    class Meta:
+        verbose_name = 'Reserva'
+        verbose_name_plural = 'Reservas'
+        ordering = ['-fecha_reserva']

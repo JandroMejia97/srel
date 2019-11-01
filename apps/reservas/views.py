@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 
 from rest_framework import viewsets, permissions, decorators, pagination
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -19,22 +19,22 @@ class ShortResultsSetPagination(pagination.PageNumberPagination):
 class TipoCanchaViewSet(viewsets.ModelViewSet):
     queryset = TipoCancha.objects.all()
     serializer_class = TipoCanchaSerializer
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication,)
 
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Cancha.objects.all()
     serializer_class = CanchaSerializer
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
 
 
 class ReservaViewSet(viewsets.ModelViewSet):
     queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
     pagination_class = ShortResultsSetPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['cancha', 'id', 'cliente', 'empleado']
+    filterset_fields = ['cancha', 'fecha_reserva', 'id', 'cliente', 'empleado']
 
     def perform_create(self, serializer):
         serializer.save(empleado=self.request.user)
