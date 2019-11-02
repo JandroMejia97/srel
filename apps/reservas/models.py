@@ -8,6 +8,7 @@ import datetime
 class TipoCancha(models.Model):
     tipo_cancha = models.CharField(
         max_length=50,
+        unique=True,
         blank=False,
         null=False,
         help_text='Ingrese el tipo de cancha.' +

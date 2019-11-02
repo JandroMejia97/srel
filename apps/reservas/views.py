@@ -6,6 +6,8 @@ from rest_framework.authentication import (
     BasicAuthentication,
     TokenAuthentication
 )
+from rest_framework import status
+from rest_framework.response import Response
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -22,19 +24,23 @@ class ShortResultsSetPagination(pagination.PageNumberPagination):
 class TipoCanchaViewSet(viewsets.ModelViewSet):
     queryset = TipoCancha.objects.all()
     serializer_class = TipoCanchaSerializer
-    authentication_classes = (TokenAuthentication, BasicAuthentication,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication,)
 
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Cancha.objects.all()
-    serializer_class = CanchaSerializer
-    authentication_classes = (TokenAuthentication, BasicAuthentication,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication,)
+
+    def get_serializer_class(self):
+         if self.request.method in ['GET']:
+             return CanchaReadSerializer
+         return CanchaSerializer
 
 
 class ReservaViewSet(viewsets.ModelViewSet):
     queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
-    authentication_classes = (TokenAuthentication, BasicAuthentication,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication,)
     pagination_class = ShortResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [

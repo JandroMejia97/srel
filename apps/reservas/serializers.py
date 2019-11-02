@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from rest_framework.serializers import ModelSerializer, CharField
+from rest_framework.serializers import ModelSerializer, CharField, PrimaryKeyRelatedField
 
 from .models import *
 
@@ -14,16 +14,39 @@ class TipoCanchaSerializer(ModelSerializer):
         ]
 
 
-class CanchaSerializer(ModelSerializer):
+class CanchaReadSerializer(ModelSerializer):
     tipo = TipoCanchaSerializer()
 
     class Meta:
         model = Cancha
-        fields = '__all__'
+        fields = [
+            'id',
+            'tipo',
+            'nombre',
+            'cod_interno',
+            'tiene_vestuario',
+            'tiene_iluminacion',
+            'tiene_cesped_sintetico',
+        ]
+
+
+class CanchaSerializer(ModelSerializer):
+    tipo = PrimaryKeyRelatedField(queryset=TipoCancha.objects.all())
+
+    class Meta:
+        model = Cancha
+        fields = [
+            'id',
+            'tipo',
+            'nombre',
+            'cod_interno',
+            'tiene_vestuario',
+            'tiene_iluminacion',
+            'tiene_cesped_sintetico',
+        ]
 
 
 class ReservaSerializer(ModelSerializer):
-    cancha = CanchaSerializer()
 
     class Meta:
         model = Reserva
@@ -36,6 +59,7 @@ class ReservaSerializer(ModelSerializer):
             'hora_turno',
             'empleado'
         ]
+        depth = 1
 
 
 class UserSerializer(ModelSerializer):
