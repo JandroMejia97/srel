@@ -2,7 +2,10 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 
 from rest_framework import viewsets, permissions, decorators, pagination
-from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.authentication import (
+    BasicAuthentication,
+    TokenAuthentication
+)
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -34,10 +37,19 @@ class ReservaViewSet(viewsets.ModelViewSet):
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     pagination_class = ShortResultsSetPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['cancha', 'fecha_reserva', 'id', 'cliente', 'empleado']
+    filterset_fields = [
+        'cancha',
+        'fecha_reserva',
+        'fecha_turno',
+        'hora_turno',
+        'id',
+        'cliente',
+        'empleado'
+    ]
 
     def perform_create(self, serializer):
         serializer.save(empleado=self.request.user)
+
 
 class OnlyPOST(permissions.BasePermission):
     def has_permission(self, request, view):

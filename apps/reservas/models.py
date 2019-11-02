@@ -1,5 +1,8 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+
+import datetime
 
 
 class TipoCancha(models.Model):
@@ -7,7 +10,8 @@ class TipoCancha(models.Model):
         max_length=50,
         blank=False,
         null=False,
-        help_text='Ingrese el tipo de cancha. Ejemplo: Cancha 11, Cancha 7, etc.',
+        help_text='Ingrese el tipo de cancha.' +
+        'Ejemplo: Cancha 11, Cancha 7, etc.',
         verbose_name='Tipo de cancha',
     )
 
@@ -32,7 +36,8 @@ class Cancha(models.Model):
         max_length=250,
         blank=False,
         null=False,
-        help_text='Ingrese el nombre de la cancha. Ejemplo: La Diego Armando',
+        help_text='Ingrese el nombre de la cancha. ' +
+        'Ejemplo: La Diego Armando',
         verbose_name='Nombre de la cancha',
     )
     cod_interno = models.CharField(
@@ -60,7 +65,7 @@ class Cancha(models.Model):
 
     def get_vestuario(self):
         return 'Sí' if self.tiene_vestuario else 'No'
-    
+
     def get_iluminacion(self):
         return 'Sí' if self.tiene_iluminacion else 'No'
 
@@ -101,7 +106,8 @@ class Reserva(models.Model):
     hora_turno = models.TimeField(
         blank=False,
         null=False,
-        help_text='Ingrese la hora en la que se usará la cancha. (No se pueden transponer).',
+        help_text='Ingrese la hora en la que se usará la cancha. ' +
+        '(No se pueden transponer).',
         verbose_name='Hora del turno'
     )
     fecha_reserva = models.DateField(
@@ -115,14 +121,68 @@ class Reserva(models.Model):
         verbose_name='Empleado de turno'
     )
 
+    def save(
+        self,
+        force_insert=False,
+        force_update=False,
+        using=None,
+        update_fields=None
+    ):
+        if self.validate_hora_turno():
+            return super().save(
+                force_insert=force_insert,
+                force_update=force_update,
+                using=using,
+                update_fields=update_fields
+            )
+
+    def validate_hora_turno(self):
+        reservas = Reserva.objects.filter(
+            models.Q(cancha=self.cancha) &
+            models.Q(fecha_turno=self.fecha_turno)
+        )
+        for reserva in reservas:
+            turno = datetime.datetime(
+                year=reserva.fecha_turno.year,
+                month=reserva.fecha_turno.month,
+                day=reserva.fecha_turno.day,
+                hour=reserva.hora_turno.hour,
+                minute=reserva.hora_turno.minute
+            )
+            delta_lim_sup = turno + datetime.timedelta(hours=1)
+            delta_lim_inf = turno - datetime.timedelta(hours=1)
+            turno_nuevo = datetime.datetime(
+                year=self.fecha_turno.year,
+                month=self.fecha_turno.month,
+                day=self.fecha_turno.day,
+                hour=self.hora_turno.hour,
+                minute=self.hora_turno.minute
+            )
+            if(turno_nuevo >= delta_lim_inf and turno_nuevo <= delta_lim_sup):
+                hora_lim_inf = delta_lim_inf.strftime('%H:%M')
+                hora_lim_sup = delta_lim_sup.strftime('%H:%M')
+                hora_turno = turno.strftime('%H:%M')
+                raise ValidationError(
+                    'La cancha se encuentra reservada a desde las ' +
+                    '%(hora_turno)s hasta las %(hora_lim_sup)s horas. ' +
+                    'Ingrese un horario antes de las %(hora_lim_inf)s o ' +
+                    'después de las %(hora_lim_sup)s horas.',
+                    params={
+                        'hora_turno': hora_turno,
+                        'hora_lim_sup': hora_lim_sup,
+                        'hora_lim_inf': hora_lim_inf
+                    }
+                )
+        return True
+
     def get_fecha_turno(self):
         return self.fecha_turno.strftime('%d/%m/%Y')
-    
+
     def get_hora_turno(self):
         return self.hora_turno.strftime('%H:%M:%S')
 
     def __str__(self):
-        return '%s %s' %(self.get_fecha_turno(), self.get_hora_turno())
+        return '%s %s' % (self.get_fecha_turno(), self.get_hora_turno())
 
     class Meta:
         verbose_name = 'Reserva'
