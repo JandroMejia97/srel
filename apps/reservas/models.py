@@ -188,4 +188,4 @@ class Reserva(models.Model):
     class Meta:
         verbose_name = 'Reserva'
         verbose_name_plural = 'Reservas'
-        ordering = ['-fecha_reserva', 'hora_turno']
+        ordering = ['-fecha_reserva', 'fecha_turno', 'hora_turno']

@@ -39,7 +39,6 @@ class CanchaViewSet(viewsets.ModelViewSet):
 
 class ReservaViewSet(viewsets.ModelViewSet):
     queryset = Reserva.objects.all()
-    serializer_class = ReservaSerializer
     authentication_classes = (BasicAuthentication, TokenAuthentication,)
     pagination_class = ShortResultsSetPagination
     filter_backends = [DjangoFilterBackend]
@@ -55,6 +54,11 @@ class ReservaViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(empleado=self.request.user)
+
+    def get_serializer_class(self):
+         if self.request.method in ['GET']:
+             return ReservaReadSerializer
+         return ReservaSerializer
 
 
 class OnlyPOST(permissions.BasePermission):

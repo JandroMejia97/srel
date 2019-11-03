@@ -46,7 +46,8 @@ class CanchaSerializer(ModelSerializer):
         ]
 
 
-class ReservaSerializer(ModelSerializer):
+class ReservaReadSerializer(ModelSerializer):
+    cancha = CanchaSerializer()
 
     class Meta:
         model = Reserva
@@ -59,7 +60,23 @@ class ReservaSerializer(ModelSerializer):
             'hora_turno',
             'empleado'
         ]
-        depth = 1
+
+
+class ReservaSerializer(ModelSerializer):
+    cancha = PrimaryKeyRelatedField(queryset=Cancha.objects.all())
+
+    class Meta:
+        model = Reserva
+        fields = [
+            'id',
+            'cliente',
+            'fecha_reserva',
+            'cancha',
+            'fecha_turno',
+            'hora_turno',
+            'empleado'
+        ]
+
 
 
 class UserSerializer(ModelSerializer):
