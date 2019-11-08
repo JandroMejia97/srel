@@ -73,10 +73,13 @@ class ReservaSerializer(ModelSerializer):
             'fecha_reserva',
             'cancha',
             'fecha_turno',
-            'hora_turno',
-            'empleado'
+            'hora_turno'
         ]
 
+    def validate(self, attrs):
+        instance = Reserva(**attrs)
+        instance.clean()
+        return attrs
 
 
 class UserSerializer(ModelSerializer):

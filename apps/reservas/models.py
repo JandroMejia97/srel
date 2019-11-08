@@ -122,26 +122,17 @@ class Reserva(models.Model):
         verbose_name='Empleado de turno'
     )
 
-    def save(
-        self,
-        force_insert=False,
-        force_update=False,
-        using=None,
-        update_fields=None
-    ):
-        if self.validate_hora_turno():
-            return super().save(
-                force_insert=force_insert,
-                force_update=force_update,
-                using=using,
-                update_fields=update_fields
+    def clean(self):
+        if self.id:
+            reservas = Reserva.objects.filter(
+                models.Q(cancha=self.cancha) &
+                models.Q(fecha_turno=self.fecha_turno)
+            ).exclude(id=self.id)
+        else:
+            reservas = Reserva.objects.filter(
+                models.Q(cancha=self.cancha) &
+                models.Q(fecha_turno=self.fecha_turno)
             )
-
-    def validate_hora_turno(self):
-        reservas = Reserva.objects.filter(
-            models.Q(cancha=self.cancha) &
-            models.Q(fecha_turno=self.fecha_turno)
-        )
         for reserva in reservas:
             turno = datetime.datetime(
                 year=reserva.fecha_turno.year,
@@ -164,9 +155,8 @@ class Reserva(models.Model):
                 hora_lim_sup = delta_lim_sup.strftime('%H:%M')
                 hora_turno = turno.strftime('%H:%M')
                 raise ValidationError(
-                    'La cancha se encuentra reservada a desde las ' +
-                    '%(hora_turno)s hasta las %(hora_lim_sup)s horas. ' +
-                    'Ingrese un horario antes de las %(hora_lim_inf)s o ' +
+                    'La hora se traslapa.' +
+                    'Ingrese una hora antes de las %(hora_lim_inf)s o ' +
                     'después de las %(hora_lim_sup)s horas.',
                     params={
                         'hora_turno': hora_turno,

@@ -6,9 +6,8 @@ from rest_framework.authentication import (
     BasicAuthentication,
     TokenAuthentication
 )
-from rest_framework import status
-from rest_framework.response import Response
 
+from rest_framework.authtoken.models import Token
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import *
@@ -55,14 +54,19 @@ class ReservaViewSet(viewsets.ModelViewSet):
         'fecha_reserva',
         'fecha_turno',
         'hora_turno',
-        'id',
         'cliente',
         'empleado'
     ]
 
     def perform_create(self, serializer):
-        if(self.request.token):
-            serializer.save(empleado=self.request.user)
+        if self.request.user:
+           serializer.save(empleado=self.request.user)
+        elif 'Authorization' in self.request.headers:
+            token_text = self.request.headers['Authorization'].split(' ')
+            token = Token.objects.get(key=token_text[1])
+            serializer.save(empleado=token.user)
+        
+            
 
     def get_serializer_class(self):
          if self.request.method in ['GET']:
