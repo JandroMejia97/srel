@@ -30,6 +30,14 @@ class TipoCanchaViewSet(viewsets.ModelViewSet):
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Cancha.objects.all()
     authentication_classes = (BasicAuthentication, TokenAuthentication,)
+    pagination_class = ShortResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = [
+        'tipo',
+        'tiene_vestuario',
+        'tiene_iluminacion',
+        'tiene_cesped_sintetico'
+    ]
 
     def get_serializer_class(self):
          if self.request.method in ['GET']:
@@ -53,7 +61,8 @@ class ReservaViewSet(viewsets.ModelViewSet):
     ]
 
     def perform_create(self, serializer):
-        serializer.save(empleado=self.request.user)
+        if(self.request.token):
+            serializer.save(empleado=self.request.user)
 
     def get_serializer_class(self):
          if self.request.method in ['GET']:
