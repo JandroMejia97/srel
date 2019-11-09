@@ -1,13 +1,20 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 
-from rest_framework import viewsets, permissions, decorators, pagination
+from rest_framework import (
+    viewsets,
+    permissions,
+    decorators,
+    pagination,
+    status
+)
 from rest_framework.authentication import (
     BasicAuthentication,
     TokenAuthentication
 )
-
+from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import *
@@ -64,9 +71,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         elif 'Authorization' in self.request.headers:
             token_text = self.request.headers['Authorization'].split(' ')
             token = Token.objects.get(key=token_text[1])
-            serializer.save(empleado=token.user)
-        
-            
+            serializer.save(empleado=token.user)       
 
     def get_serializer_class(self):
          if self.request.method in ['GET']:
@@ -86,3 +91,11 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
+
+    def perform_destroy(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.delete(user=self.request.user)
+        elif 'Authorization' in self.request.headers:
+            token_text = self.request.headers['Authorization'].split(' ')
+            token = Token.objects.get(key=token_text[1])
+            serializer.delete(user=token.user)
