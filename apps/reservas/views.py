@@ -30,12 +30,12 @@ class ShortResultsSetPagination(pagination.PageNumberPagination):
 class TipoCanchaViewSet(viewsets.ModelViewSet):
     queryset = TipoCancha.objects.all()
     serializer_class = TipoCanchaSerializer
-    authentication_classes = (BasicAuthentication, TokenAuthentication,)
+    authentication_classes = (TokenAuthentication,)
 
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Cancha.objects.all()
-    authentication_classes = (BasicAuthentication, TokenAuthentication,)
+    authentication_classes = (TokenAuthentication,)
     pagination_class = ShortResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [
@@ -53,7 +53,7 @@ class CanchaViewSet(viewsets.ModelViewSet):
 
 class ReservaViewSet(viewsets.ModelViewSet):
     queryset = Reserva.objects.all()
-    authentication_classes = (BasicAuthentication, TokenAuthentication,)
+    authentication_classes = (TokenAuthentication,)
     pagination_class = ShortResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = [
